@@ -7,12 +7,12 @@
     <style>
         :root {
             --bg: #fdeef3;
-            --side: #f9d6e3;
-            --paper: #fffafc;
+            --side: #fbd9e4;
+            --card: #ffffff;
             --ink: #3d1f2e;
-            --muted: #7d5a6b;
-            --rose: #c2437d;
-            --rose-dark: #9f3366;
+            --muted: #6b4a5a;
+            --rose: #b03a6b;
+            --rose-dark: #8c2b53;
             --line: #efc3d5;
             --ok: #2f7a4f;
             --error-bg: #fff0f0;
@@ -32,8 +32,7 @@
             min-height: 100vh;
         }
 
-
-        /* ---------- Sidebar ---------- */
+        /* Sidebar */
         aside {
             background: var(--side);
             padding: 36px 24px;
@@ -53,22 +52,14 @@
             line-height: 1.15;
         }
         .subtitle { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
-
-
-        .group h2 {
-            margin: 0 0 8px;
-            font-size: 1rem;
-            color: var(--rose-dark);
-        }
+        .group h2 { margin: 0 0 8px; font-size: 1rem; color: var(--rose-dark); }
         .card {
-            background: var(--paper);
+            background: var(--card);
             border: 2px solid var(--line);
             border-radius: 14px;
             padding: 6px 16px;
         }
 
-
-        /* Device details: label on the left, value on the right */
         dl { margin: 0; }
         .row {
             display: flex;
@@ -81,8 +72,6 @@
         dt { color: var(--muted); }
         dd { margin: 0; font-family: Consolas, "Courier New", monospace; font-size: 0.92rem; }
 
-
-        /* Command list */
         ul { margin: 0; padding: 0; list-style: none; }
         li {
             padding: 9px 0;
@@ -91,7 +80,6 @@
             font-size: 0.9rem;
         }
         li:last-child { border-bottom: 0; }
-
 
         button {
             width: 100%;
@@ -108,13 +96,11 @@
         button:focus-visible, summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
         button:disabled { background: var(--muted); cursor: wait; }
 
-
         .status { margin: 10px 0 0; text-align: center; font-size: 0.9rem; color: var(--muted); }
         .status.ok { color: var(--ok); font-weight: 700; }
         .status.fail { color: var(--error-ink); font-weight: 700; }
 
-
-        /* ---------- Results ---------- */
+        /* Results */
         main { padding: 40px 36px 64px; min-width: 0; }
         main h2 {
             margin: 0 0 16px;
@@ -132,9 +118,8 @@
         .error small { display: block; margin-top: 4px; }
         .hint { color: var(--muted); }
 
-
         details {
-            background: var(--paper);
+            background: var(--card);
             border: 2px solid var(--line);
             border-radius: 14px;
             margin-bottom: 14px;
@@ -159,7 +144,6 @@
             line-height: 1.45;
         }
 
-
         @media (max-width: 760px) {
             .layout { grid-template-columns: 1fr; }
             aside { border-right: 0; border-bottom: 2px solid var(--line); padding: 28px 20px; }
@@ -177,30 +161,27 @@
                     <p class="subtitle">Cisco router in the EVE-NG lab</p>
                 </div>
 
-
                 <section class="group">
                     <h2>Device</h2>
                     <div class="card">
                         <dl>
-                            <div class="row"><dt>Address</dt><dd>192.168.10.35</dd></div>
-                            <div class="row"><dt>Port</dt><dd>32770</dd></div>
-                            <div class="row"><dt>Protocol</dt><dd>Telnet</dd></div>
+                            <div class="row"><dt>Address</dt><dd>{{ device.ip }}</dd></div>
+                            <div class="row"><dt>Port</dt><dd>{{ device.port }}</dd></div>
+                            <div class="row"><dt>Protocol</dt><dd>{{ device.protocol }}</dd></div>
                         </dl>
                     </div>
                 </section>
-
 
                 <section class="group">
                     <h2>Commands to run</h2>
                     <div class="card">
                         <ul>
-                            <li>show version</li>
-                            <li>show ip interface brief</li>
-                            <li>show running-config</li>
+                            {% for c in commands %}
+                                <li>{{ c }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </section>
-
 
                 <form method="POST" id="run-form">
                     <button type="submit" id="run-btn">Run diagnostics</button>
@@ -215,16 +196,14 @@
             </div>
         </aside>
 
-
         <main>
             {% if error %}
                 <div class="error" role="alert">
                     <strong>Could not run diagnostics.</strong>
                     <small>{{ error }}</small>
-                    <small>Check that the EVE-NG lab is running and the IP and port in api.py match it.</small>
+                    <small>Check that the EVE-NG lab is running and that {{ device.ip }}:{{ device.port }} is reachable.</small>
                 </div>
             {% endif %}
-
 
             {% if results %}
                 <h2>Results</h2>
@@ -239,7 +218,6 @@
             {% endif %}
         </main>
     </div>
-
 
     <script>
         document.getElementById("run-form").addEventListener("submit", function () {

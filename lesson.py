@@ -2,7 +2,7 @@ from netmiko import ConnectHandler
 
 router_device = {
     'device_type': 'cisco_ios_telnet',
-    'ip': '192.168.10.35',
+    'ip': '192.168.10.31',
     'port': 32770,
     'username': 'admin',
     'password': 'eve123',
